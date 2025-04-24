@@ -119,7 +119,9 @@ void handleSttRequest(int clientSock, ParsedHttpRequest request) {
                              if (recognitionError) {
                                  NSLog(@"[%d] STT Error (main thread): %@ (Domain: %@ Code: %ld)", capturedClientSock, recognitionError.localizedDescription, recognitionError.domain, (long)recognitionError.code);
                                  NSString* errorMsg = [NSString stringWithFormat:@"Recognition failed: %@", recognitionError.localizedDescription]; int errCode = 500; NSString* errDesc = @"Internal Server Error";
-                                 if ([recognitionError.domain isEqualToString:SFSpeechErrorDomain]) { if(recognitionError.code == SFSpeechErrorCodeAudioReadFailed) {errCode=400; errDesc=@"Bad Request"; errorMsg=@"Recog failed: Audio format/read issue.";} }
+                                 if ([recognitionError.domain isEqualToString:SFSpeechErrorDomain]) {
+                                    if(recognitionError.code == 301) {errCode=400; errDesc=@"Bad Request"; errorMsg=@"Recog failed: Audio format/read issue.";}
+                                 }
                                  else if ([recognitionError.domain isEqualToString:@"kAFAssistantErrorDomain"]) { if (recognitionError.code == 203){errCode=400; errDesc=@"Bad Request"; errorMsg=@"Recog failed: No speech detected.";} else if (recognitionError.code == 209){errCode=400; errDesc=@"Bad Request"; errorMsg=@"Recog failed: Audio format incompatible?";} else if (recognitionError.code == 1700){errCode=503; errDesc=@"Service Unavailable"; errorMsg=@"Recog failed: Apple Speech service issue.";}}
                                  else if (recognitionError.code == NSUserCancelledError && [recognitionError.domain isEqualToString:NSCocoaErrorDomain]) { shouldCleanupAndClose = NO; NSLog(@"[%d] STT Task cancelled (likely by timeout).", capturedClientSock); }
                                  if (shouldCleanupAndClose) sendErrorResponse(capturedClientSock, errCode, errDesc, errorMsg);
