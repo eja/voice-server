@@ -1,0 +1,7 @@
+*.o
+*.d
+voice-server
+
+.DS_Store
+._*
+*.swp

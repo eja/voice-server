@@ -36,24 +36,13 @@ It allows applications (local or remote) to easily leverage macOS speech synthes
 
 2.  **Command-line Options:**
     ```
-    Usage: ./voice-server [options]
-   
-      -p, --port <number>      Port (default: 35248)
-      -h, --host <address>     Host (default: 127.0.0.1). Use 0.0.0.0 for all.
-          --log-file <path>    Redirect logs to a file (appends if exists)
-      -?, --help               Show help
-
-    Endpoints:
-      POST /tts               - Text-to-Speech.
-                                Body: JSON {'text': '...', 'language': '...'}
-                                Returns: audio/wav
-      POST /stt               - Speech-to-Text (using audio buffers).
-                                Body: multipart/form-data
-                                  Part 1: name='language', body='...' (Optional, e.g., en-US)
-                                  Part 2: name='audio', filename='ignored.wav', body=<audio_data>
-                                Audio Format: WAV preferred, but uses AVFoundation - check its supported input formats.
-                                SFSpeechRecognizer often prefers 16kHz Mono Linear PCM.
-                                Returns: JSON {'transcript': '...', 'language': '...'}
+    Usage: voice-server [options]
+    
+     -p, --port <number>      port (default: 35248)
+     -h, --host <address>     host (default: 127.0.0.1). Use 0.0.0.0 for all.
+     --log-file <path>        redirect logs to a file (appends if exists)
+     -?, --help               this help
+    
     ```
 
 3.  **Permissions Reminder:** Ensure Speech Recognition permission is granted *before* sending your first STT request, otherwise the request will likely fail.
