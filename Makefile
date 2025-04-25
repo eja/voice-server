@@ -11,7 +11,7 @@ CFLAGS := -fobjc-arc \
 CFLAGS += -O2 -flto
 # CFLAGS += -g -O0
 
-SRCS := main.m tts.m stt.m
+SRCS := main.m audio.m tts.m stt.m
 
 OBJS := $(SRCS:.m=.o)
 
