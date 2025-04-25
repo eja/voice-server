@@ -189,10 +189,10 @@ void printUsage() {
     printf("Copyright: 2025 by Ubaldo Porcheddu <ubaldo@eja.it>\n");
     printf("Version: %s\n", [VERSION UTF8String]);
     printf("Usage: %s [options]\n\n", [NAME UTF8String]);
-    printf(" -p, --port <number>      port (default: %d)\n", DEFAULT_PORT);
-    printf(" -h, --host <address>     host (default: %s). Use 0.0.0.0 for all.\n", [DEFAULT_HOST UTF8String]);
-    printf("     --log-file <path>    redirect logs to a file (appends if exists)\n");
-    printf(" -?, --help               this help\n");
+    printf(" --port <number>      port (default: %d)\n", DEFAULT_PORT);
+    printf(" --host <address>     host (default: %s)\n", [DEFAULT_HOST UTF8String]);
+    printf(" --log  <path>        redirect logs to a file\n");
+    printf(" --help               this help\n");
     printf("\n");
 }
 
@@ -359,51 +359,55 @@ int main(int argc, char * const argv[]) {
         NSString *serverHost = DEFAULT_HOST;
         NSString *logFilePath = nil;
 
-        #define LOG_FILE_OPT 257
+        enum {
+            OPT_PORT = 0x100,
+            OPT_HOST,
+            OPT_LOG,
+            OPT_HELP
+        };
+        
         struct option long_opts[] = {
-            {"port", required_argument, 0, 'p'},
-            {"host", required_argument, 0, 'h'},
-            {"log-file", required_argument, 0, LOG_FILE_OPT },
-            {"help", no_argument, 0, '?'},
-            {0,0,0,0}
+            {"port", required_argument, NULL, OPT_PORT},
+            {"host", required_argument, NULL, OPT_HOST},
+            {"log", required_argument, NULL, OPT_LOG},
+            {"help", no_argument, NULL, OPT_HELP},
+            {NULL, 0, NULL, 0}
         };
 
         int c;
         int option_index = 0;
-        while ((c = getopt_long(argc, argv, "p:h:?", long_opts, &option_index)) != -1) {
+        while ((c = getopt_long(argc, argv, "", long_opts, &option_index)) != -1) {
             switch (c) {
-                case 'p':
+                case OPT_PORT:
                     serverPort = atoi(optarg);
                     if (serverPort <= 0 || serverPort > 65535) {
                         fprintf(stderr,"Invalid port\n");
                         return 1;
                     }
                     break;
-                case 'h':
+                case OPT_HOST:
                     serverHost = [NSString stringWithUTF8String:optarg];
                     break;
-                case LOG_FILE_OPT:
+                case OPT_LOG:
                     logFilePath = [NSString stringWithUTF8String:optarg];
                     break;
-                case '?':
+                case OPT_HELP:
                 default:
                     printUsage();
-                    return (c == '?') ? 0 : 1;
+                    return 1;
             }
         }
 
         if (logFilePath) {
             const char *filePathCStr = [logFilePath UTF8String];
-            if (freopen(filePathCStr, "a", stderr) == NULL) {
+            if (freopen(filePathCStr, "w", stderr) == NULL) {
                 perror("Failed to redirect stderr");
             } else {
                 setvbuf(stderr, NULL, _IOLBF, 0);
-                NSLog(@"--- Log start --- Redirecting stderr to: %@", logFilePath);
             }
         } else {
             setvbuf(stderr, NULL, _IOLBF, 0);
             setvbuf(stdout, NULL, _IOLBF, 0);
-             NSLog(@"--- Log start --- Logging to standard error.");
         }
 
         [SFSpeechRecognizer requestAuthorization:^(SFSpeechRecognizerAuthorizationStatus status) {

@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define VERSION @"1.4.24"
+#define VERSION @"1.4.25"
 #define NAME @"voice-server"
 
 @interface MultipartPart : NSObject
