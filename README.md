@@ -39,8 +39,8 @@ It allows applications (local or remote) to easily leverage macOS speech synthes
     Usage: voice-server [options]
     
      --port <number>      port (default: 35248)
-     --host <address>     host (default: 127.0.0.1). Use 0.0.0.0 for all.
-     --log-file <path>    redirect logs to a file (appends if exists)
+     --host <address>     host (default: 127.0.0.1)
+     --log  <path>        redirect logs to a file
      --help               this help
     
     ```
